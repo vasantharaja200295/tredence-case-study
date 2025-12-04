@@ -1,17 +1,22 @@
-import { Button } from "./components/ui/button";
+import { ThemeProvider } from "./components/theme/provider";
+import { ThemeToggle } from "./components/theme/toggle";
+import { Sidebar, SidebarProvider } from "./components/ui/sidebar";
+import WorkflowCanvas from "./components/WorkflowCanvas";
 
 function App() {
   return (
-    <div>
-      <h1>Hello world!</h1>
-      <h2>H2</h2>
-      <h3>h3</h3>
-      <h4>h4</h4>
-      <h5>h5</h5>
-      <h6>h6</h6>
-      <p>paragraph</p>
-      <Button>Hello</Button>
-    </div>
+    <ThemeProvider defaultTheme="dark" storageKey="theme-key">
+      <SidebarProvider>
+        <main className="h-screen w-screen flex">
+          <Sidebar>
+            <ThemeToggle />
+          </Sidebar>
+          <div className=" h-screen w-full p-4 box-border">
+            <WorkflowCanvas />
+          </div>
+        </main>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }
 
