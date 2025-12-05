@@ -1,11 +1,11 @@
-import { useCallback, useRef, type DragEvent } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useCallback, type DragEvent } from "react";
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
   useReactFlow,
+  type NodeMouseHandler,
 } from "@xyflow/react";
 import { useTheme } from "./theme/provider";
 import useStore from "@/store/workflowStore";
@@ -15,13 +15,31 @@ import "@xyflow/react/dist/style.css";
 import type { AppState } from "@/types/state";
 import { NODES } from "./nodes";
 import { DEFAULT_EDGE_STYLES } from "@/constants";
+import { createNode } from "@/lib/nodeUitls";
 
 const WorkflowCanvas = () => {
   const { theme } = useTheme();
   const { screenToFlowPosition } = useReactFlow();
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes } =
-    useStore(useShallow(mapStateToProps));
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    setNodes,
+    setSelectedNode,
+  } = useStore(useShallow(mapStateToProps));
+
+  const onNodeClick = useCallback<NodeMouseHandler>(
+    (_event, node) => {
+      setSelectedNode(node);
+    },
+    [setSelectedNode]
+  );
+
+  const onPaneClick = useCallback(() => {
+    setSelectedNode(null);
+  }, [setSelectedNode]);
 
   const onDragOver = useCallback((event: DragEvent) => {
     event.preventDefault();
@@ -40,12 +58,7 @@ const WorkflowCanvas = () => {
         y: event.clientY - 60,
       });
 
-      const newNode = {
-        id: uuidv4(),
-        type,
-        position,
-        data: {},
-      };
+      const newNode = createNode(position, type);
       setNodes([...nodes, newNode]);
     },
     [nodes, setNodes, screenToFlowPosition]
@@ -63,6 +76,8 @@ const WorkflowCanvas = () => {
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
         colorMode={theme}
         className="rounded-md"
         defaultEdgeOptions={DEFAULT_EDGE_STYLES}
@@ -82,6 +97,7 @@ const mapStateToProps = (state: AppState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   setNodes: state.setNodes,
+  setSelectedNode: state.setSelectedNode,
 });
 
 export default WorkflowCanvas;

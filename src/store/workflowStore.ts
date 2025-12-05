@@ -6,6 +6,7 @@ import type { AppState } from "@/types/state";
 const useStore = create<AppState>((set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
+  selectedNode: null,
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -19,6 +20,30 @@ const useStore = create<AppState>((set, get) => ({
       edges: addEdge(connection, get().edges),
     });
   },
+
+  setSelectedNode: (node) => {
+    set({ selectedNode: node });
+  },
+
+  updateNode: (nodeId, data) => {
+    set({
+      nodes: get().nodes.map((node) =>
+        node.id === nodeId ? { ...node, data: { ...node.data, ...data } } : node
+      ),
+    });
+  },
+
+  deleteNode: (nodeId) => {
+    set({
+      nodes: get().nodes.filter((n) => n.id !== nodeId),
+      edges: get().edges.filter(
+        (e) => e.source !== nodeId && e.target !== nodeId
+      ),
+      selectedNode:
+        get().selectedNode?.id === nodeId ? null : get().selectedNode,
+    });
+  },
+
   setNodes: (nodes) => {
     set({ nodes });
   },

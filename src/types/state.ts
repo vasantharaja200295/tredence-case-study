@@ -6,13 +6,16 @@ import {
   type OnConnect,
 } from "@xyflow/react";
 
-
 export type AppState = {
-    nodes: Node[],
-    edges: Edge[],
-    onNodesChange: OnNodesChange<Node>,
-    onEdgesChange: OnEdgesChange,
-    onConnect:OnConnect,
-    setNodes:(nodes:Node[]) => void,
-    setEdges:(edges:Edge[]) => void,
-}
+  nodes: Node[];
+  edges: Edge[];
+  selectedNode: Node | null;
+  onNodesChange: OnNodesChange<Node>;
+  onEdgesChange: OnEdgesChange;
+  onConnect: OnConnect;
+  setSelectedNode: (node: Node | null) => void;
+  updateNode: (nodeId: string, data: any) => void;
+  deleteNode: (nodeId: string) => void;
+  setNodes: (nodes: Node[]) => void;
+  setEdges: (edges: Edge[]) => void;
+};

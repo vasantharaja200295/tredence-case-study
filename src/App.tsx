@@ -1,14 +1,11 @@
 import NodesSidebar from "./components/NodeSidebar";
 import { ThemeProvider } from "./components/theme/provider";
 import { Separator } from "./components/ui/separator";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarProvider,
-} from "./components/ui/sidebar";
+import { SidebarProvider } from "./components/ui/sidebar";
 import { ReactFlowProvider } from "@xyflow/react";
 import WorkflowCanvas from "./components/WorkflowCanvas";
+import ConfigPanel from "./components/ConfigPanel";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -32,10 +29,10 @@ function App() {
         </main>
         <aside>
           <div className=" w-64 border-l h-full">
-            <SidebarHeader>Right SideBar</SidebarHeader>
-            <SidebarContent></SidebarContent>
+            <ConfigPanel />
           </div>
         </aside>
+        <Toaster position={"top-center"} richColors closeButton />
       </SidebarProvider>
     </ThemeProvider>
   );

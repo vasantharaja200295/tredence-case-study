@@ -1,4 +1,3 @@
-import React from "react";
 import BaseNode from "./BaseNode";
 
 const EndNode = ({ data, selected }: any) => {

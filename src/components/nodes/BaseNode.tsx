@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import { useNodeId, Position } from "@xyflow/react";
 import Handle from "@/components/Handle";
 
@@ -27,13 +27,12 @@ const BaseNode = ({
     <>
       <Card
         className={cn(
-          "min-w-[200px] transition-all duration-200",
-          selected && "ring-4 ring-blue-500 shadow-lg shadow-blue-500/50"
+          "py-2 transition-all duration-200",
+          selected && "ring-4 ring-blue-500 shadow-lg shadow-blue-500/50",
+          !selected && "hover:border-gray-500"
         )}
       >
-        <CardHeader>Node</CardHeader>
-        <CardContent>{children}</CardContent>
-        <CardFooter>Card footer</CardFooter>
+        <CardContent className="px-2">{children}</CardContent>
       </Card>
       {isGeneral && (
         <>
