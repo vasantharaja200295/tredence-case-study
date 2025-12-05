@@ -54,6 +54,8 @@ const WorkflowCanvas = () => {
         return;
       }
       const position = screenToFlowPosition({
+        // the value 60 is for compensating the header height above the canvas pane
+        // without this error correction the nodes wont be droped at the the current position of the mouse
         x: event.clientX - 60,
         y: event.clientY - 60,
       });

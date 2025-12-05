@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Sidebar, SidebarHeader, SidebarMenuItem } from "./ui/sidebar";
+import { Sidebar, SidebarHeader } from "./ui/sidebar";
 import ThemeToggle from "./theme/Toggle";
 import { Separator } from "./ui/separator";
 import {
   GitBranch,
-  Play,
   UserRoundCheck,
   ClipboardClock,
   CheckCheck,
@@ -14,12 +13,6 @@ import { Card, CardContent } from "./ui/card";
 import { NODE_TYPES } from "@/constants";
 
 const SidebarItems = [
-  {
-    title: "Start",
-    description: "Start node",
-    icon: <Play size={14} />,
-    type: NODE_TYPES.START,
-  },
   {
     title: "Manual Task",
     description: "Manual Task node",

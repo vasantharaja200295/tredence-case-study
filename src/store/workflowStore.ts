@@ -2,14 +2,22 @@ import { create } from "zustand";
 import { addEdge, applyEdgeChanges, applyNodeChanges } from "@xyflow/react";
 import { initialEdges, initialNodes } from "@/constants/mockData";
 import type { AppState } from "@/types/state";
+import { toast } from "sonner";
 
 const useStore = create<AppState>((set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
   selectedNode: null,
   onNodesChange: (changes) => {
+    const filteredChanges = changes.filter((change) => {
+      if (change.type === "remove" && change.id === "start-node") {
+        toast.warning("Cannot delete start node");
+        return false;
+      }
+      return true;
+    });
     set({
-      nodes: applyNodeChanges(changes, get().nodes),
+      nodes: applyNodeChanges(filteredChanges, get().nodes),
     });
   },
   onEdgesChange: (changes) => {
