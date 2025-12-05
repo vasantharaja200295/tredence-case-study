@@ -3,7 +3,7 @@ import type { XYPosition } from "@xyflow/react";
 import {
   APPROVAL_NODE_FIELDS,
   AUTOMATION_NODE_FIELDS,
-  ENDE_NODE_FIELDS,
+  END_NODE_FIELDS,
   NODE_TYPES,
   TASK_NODE_FIELDS,
 } from "@/constants";
@@ -18,7 +18,7 @@ export function createNode(position: XYPosition, type: string) {
       case NODE_TYPES.AUTOMATION:
         return AUTOMATION_NODE_FIELDS;
       case NODE_TYPES.END:
-        return ENDE_NODE_FIELDS;
+        return END_NODE_FIELDS;
       default:
         return {};
     }

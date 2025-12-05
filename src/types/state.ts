@@ -1,21 +1,24 @@
 import {
   type Edge,
-  type Node,
   type OnEdgesChange,
   type OnNodesChange,
   type OnConnect,
 } from "@xyflow/react";
+import type { WorkflowNode } from "./nodes";
 
 export type AppState = {
-  nodes: Node[];
+  nodes: WorkflowNode[];
   edges: Edge[];
-  selectedNode: Node | null;
-  onNodesChange: OnNodesChange<Node>;
+  selectedNode: WorkflowNode | null;
+  onNodesChange: OnNodesChange<WorkflowNode>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
-  setSelectedNode: (node: Node | null) => void;
-  updateNode: (nodeId: string, data: any) => void;
+  setSelectedNode: (node: WorkflowNode | null) => void;
+  updateNode: <T extends WorkflowNode>(
+    nodeId: string,
+    data: Partial<T["data"]>
+  ) => void;
   deleteNode: (nodeId: string) => void;
-  setNodes: (nodes: Node[]) => void;
+  setNodes: (nodes: WorkflowNode[]) => void;
   setEdges: (edges: Edge[]) => void;
 };

@@ -53,7 +53,7 @@ const ConfigPanel = () => {
       </SidebarHeader>
       <Separator />
       <SidebarContent className="p-2 h-[87vh]">{renderForms()}</SidebarContent>
-      {selectedNode && (
+      {selectedNode && selectedNode?.type !== "start" && (
         <SidebarFooter>
           <Button onClick={handleDeleteNode}>Delete Node</Button>
         </SidebarFooter>

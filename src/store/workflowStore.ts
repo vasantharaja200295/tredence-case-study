@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { addEdge, applyEdgeChanges, applyNodeChanges } from "@xyflow/react";
 import { initialEdges, initialNodes } from "@/constants/mockData";
 import type { AppState } from "@/types/state";
+import type { WorkflowNode } from "@/types/nodes";
 import { toast } from "sonner";
 
 const useStore = create<AppState>((set, get) => ({
@@ -17,7 +18,7 @@ const useStore = create<AppState>((set, get) => ({
       return true;
     });
     set({
-      nodes: applyNodeChanges(filteredChanges, get().nodes),
+      nodes: applyNodeChanges<WorkflowNode>(filteredChanges, get().nodes),
     });
   },
   onEdgesChange: (changes) => {
@@ -28,19 +29,23 @@ const useStore = create<AppState>((set, get) => ({
       edges: addEdge(connection, get().edges),
     });
   },
-
   setSelectedNode: (node) => {
     set({ selectedNode: node });
   },
-
   updateNode: (nodeId, data) => {
+    const updatedNodes = get().nodes.map((node) =>
+      node.id === nodeId
+        ? ({ ...node, data: { ...node.data, ...data } } as WorkflowNode)
+        : node
+    );
+    const updatedNode = updatedNodes.find((n) => n.id === nodeId);
     set({
-      nodes: get().nodes.map((node) =>
-        node.id === nodeId ? { ...node, data: { ...node.data, ...data } } : node
-      ),
+      nodes: updatedNodes,
+      selectedNode: get().selectedNode?.id === nodeId
+        ? updatedNode || null
+        : get().selectedNode,
     });
   },
-
   deleteNode: (nodeId) => {
     set({
       nodes: get().nodes.filter((n) => n.id !== nodeId),
@@ -51,7 +56,6 @@ const useStore = create<AppState>((set, get) => ({
         get().selectedNode?.id === nodeId ? null : get().selectedNode,
     });
   },
-
   setNodes: (nodes) => {
     set({ nodes });
   },

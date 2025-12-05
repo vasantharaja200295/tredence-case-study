@@ -23,12 +23,20 @@ const BaseNode = ({
 }: NodeProps) => {
   const nodeId = useNodeId();
 
+  const getRingColor = () => {
+    if (isStart) return "ring-blue-500 shadow-blue-500/50";
+    if (isEnd) return "ring-red-500 shadow-red-500/50";
+    if (isConditional) return "ring-yellow-500 shadow-yellow-500/50";
+    if (isGeneral) return "ring-violet-500 shadow-violet-500/50";
+    return "ring-gray-500 shadow-gray-500/50";
+  };
+
   return (
     <>
       <Card
         className={cn(
-          "py-2 transition-all duration-200",
-          selected && "ring-4 ring-blue-500 shadow-lg shadow-blue-500/50",
+          "p-2 transition-all duration-200 rounded-md min-w-[200px] min-h-[110px] max-h-[250px] max-w-[300px]",
+          selected && "ring-3  shadow-lg " + getRingColor(),
           !selected && "hover:border-gray-500"
         )}
       >

@@ -1,7 +1,130 @@
-import React from "react";
+import { useCallback } from "react";
+import useStore from "@/store/workflowStore";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { MOCK_USERS } from "@/constants/mockData";
+import type { AppState } from "@/types/state";
+import type { TaskNodeData } from "@/types/nodes";
+import { useShallow } from "zustand/react/shallow";
+import { Card, CardContent } from "../ui/card";
+import AssigneeSelect from "./AssigneeSelect";
+import DatePicker from "./DatePicker";
 
 const TaskNodeForm = () => {
-  return <div>TaskNodeForm</div>;
+  const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
+
+  const handleChange = useCallback(
+    <K extends keyof TaskNodeData>(field: K, value: TaskNodeData[K]) => {
+      if (selectedNode && selectedNode.type === "task") {
+        updateNode(selectedNode.id, { [field]: value });
+      }
+    },
+    [selectedNode, updateNode]
+  );
+
+  const handleAssigneeChange = useCallback(
+    (userId: string) => {
+      if (selectedNode && selectedNode.type === "task") {
+        const user = MOCK_USERS.find((u) => u.id === userId);
+        if (user) {
+          updateNode(selectedNode.id, {
+            assignee: {
+              image: user.image,
+              name: user.name,
+            },
+          });
+        }
+      }
+    },
+    [selectedNode, updateNode]
+  );
+
+  if (!selectedNode || selectedNode.type !== "task") return null;
+
+  const data = selectedNode.data;
+
+  return (
+    <div className="space-y-6">
+      {/* Description Card */}
+      <Card className="bg-blue-50 py-3 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+        <CardContent className="px-3">
+          <div className="flex items-start gap-3">
+            <div>
+              <h4 className="font-semibold text-sm text-blue-900 dark:text-blue-100">
+                Task Node
+              </h4>
+              <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                Assign manual tasks to team members with deadlines. Track
+                completion and manage workload distribution.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Form Fields */}
+      <div className="space-y-4">
+        {/* Title */}
+        <div className="space-y-2">
+          <Label htmlFor="title">
+            Task Title <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="title"
+            placeholder="e.g., Collect employee documents"
+            value={data.title || ""}
+            onChange={(e) => handleChange("title", e.target.value)}
+          />
+        </div>
+
+        {/* Description */}
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            placeholder="Describe the task in detail..."
+            rows={4}
+            value={data.description || ""}
+            onChange={(e) => handleChange("description", e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            Provide clear instructions for the assignee
+          </p>
+        </div>
+
+        {/* Assignee */}
+        <div className="space-y-2">
+          <Label htmlFor="assignee">
+            Assignee <span className="text-red-500">*</span>
+          </Label>
+          <AssigneeSelect
+            value={data.assignee}
+            onValueChange={handleAssigneeChange}
+            placeholder="Select a team member"
+          />
+        </div>
+
+        {/* Due Date */}
+        <div className="space-y-2">
+          <Label htmlFor="dueDate">Due Date</Label>
+          <DatePicker
+            value={data.dueDate}
+            onChange={(timeStamp) =>
+              handleChange("dueDate", timeStamp || Date.now())
+            }
+            placeholder="Select due date"
+            minDate={new Date()}
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
+
+const mapStateToProps = (state: AppState) => ({
+  updateNode: state.updateNode,
+  selectedNode: state.selectedNode,
+});
 
 export default TaskNodeForm;

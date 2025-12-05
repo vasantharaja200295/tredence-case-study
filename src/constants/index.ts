@@ -1,10 +1,21 @@
+import type {
+  StartNodeData,
+  TaskNodeData,
+  ApprovalNodeData,
+  AutomationNodeData,
+  EndNodeData,
+} from "@/types/nodes";
+
 export const DEFAULT_EDGE_STYLES = {
   style: {
     strokeWidth: 5,
   },
-};
+} as const;
 
-export const DEFAULT_HANDLE_STYLES = { height: "16px", width: "16px" };
+export const DEFAULT_HANDLE_STYLES = {
+  height: "16px",
+  width: "16px",
+} as const;
 
 export const NODE_TYPES = {
   START: "start",
@@ -12,21 +23,30 @@ export const NODE_TYPES = {
   AUTOMATION: "automation",
   APPROVAL: "approval",
   TASK: "task",
-};
+} as const;
 
-export const START_NODE_FIELDS = {
+export type NodeType = (typeof NODE_TYPES)[keyof typeof NODE_TYPES];
+
+export const START_NODE_FIELDS: StartNodeData = {
   title: "",
 };
 
-export const TASK_NODE_FIELDS = {
+export const TASK_NODE_FIELDS: TaskNodeData = {
   title: "",
   description: "",
-  assignee: "",
+  assignee: {
+    image: "",
+    name: "",
+  },
   dueDate: Date.now(),
 };
 
-export const APPROVAL_NODE_FIELDS = {
+export const APPROVAL_NODE_FIELDS: ApprovalNodeData = {
   title: "",
+  approver: {
+    image: "",
+    name: "",
+  },
   approverRole: "",
   autoApprove: {
     isActive: false,
@@ -34,7 +54,7 @@ export const APPROVAL_NODE_FIELDS = {
   },
 };
 
-export const AUTOMATION_NODE_FIELDS = {
+export const AUTOMATION_NODE_FIELDS: AutomationNodeData = {
   title: "",
   action: {
     name: "",
@@ -42,7 +62,7 @@ export const AUTOMATION_NODE_FIELDS = {
   },
 };
 
-export const ENDE_NODE_FIELDS = {
+export const END_NODE_FIELDS: EndNodeData = {
   message: "",
   summary: false,
 };
