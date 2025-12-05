@@ -8,8 +8,8 @@ import type { AppState } from "@/types/state";
 import type { TaskNodeData } from "@/types/nodes";
 import { useShallow } from "zustand/react/shallow";
 import { Card, CardContent } from "../ui/card";
-import AssigneeSelect from "./AssigneeSelect";
-import DatePicker from "./DatePicker";
+import AssigneeSelect from "@/components/AssigneeSelect";
+import DatePicker from "../DatePicker";
 
 const TaskNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
