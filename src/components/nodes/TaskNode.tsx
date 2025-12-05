@@ -1,9 +1,9 @@
 import React from "react";
 import BaseNode from "./BaseNode";
 
-const TaskNode = () => {
+const TaskNode = ({ data, selected }: any) => {
   return (
-    <BaseNode isGeneral>
+    <BaseNode isGeneral selected={selected}>
       <div>TaskNode</div>
     </BaseNode>
   );

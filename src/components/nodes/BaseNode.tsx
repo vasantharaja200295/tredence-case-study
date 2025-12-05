@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useNodeId, Position } from "@xyflow/react";
 import Handle from "@/components/Handle";
@@ -9,6 +10,7 @@ type NodeProps = {
   isEnd?: boolean;
   isConditional?: boolean;
   isGeneral?: boolean;
+  selected: boolean;
 };
 
 const BaseNode = ({
@@ -17,12 +19,18 @@ const BaseNode = ({
   isEnd,
   isConditional,
   isGeneral,
+  selected,
 }: NodeProps) => {
   const nodeId = useNodeId();
 
   return (
     <>
-      <Card className="w-[250px]">
+      <Card
+        className={cn(
+          "min-w-[200px] transition-all duration-200",
+          selected && "ring-4 ring-blue-500 shadow-lg shadow-blue-500/50"
+        )}
+      >
         <CardHeader>Node</CardHeader>
         <CardContent>{children}</CardContent>
         <CardFooter>Card footer</CardFooter>

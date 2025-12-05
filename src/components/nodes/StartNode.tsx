@@ -1,9 +1,8 @@
-import React from "react";
 import BaseNode from "./BaseNode";
 
-const StartNode = ({ data }: any) => {
+const StartNode = ({ data, selected }: any) => {
   return (
-    <BaseNode isStart>
+    <BaseNode isStart selected={selected}>
       <div>Start Node</div>
     </BaseNode>
   );

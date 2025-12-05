@@ -1,9 +1,8 @@
-import React from "react";
 import BaseNode from "./BaseNode";
 
-const ApprovalNode = () => {
+const ApprovalNode = ({ selected }: any) => {
   return (
-    <BaseNode isConditional>
+    <BaseNode isConditional selected={selected}>
       <div>ApprovalNode</div>
     </BaseNode>
   );

@@ -1,9 +1,9 @@
 import React from "react";
 import BaseNode from "./BaseNode";
 
-const AutomationNode = () => {
+const AutomationNode = ({ selected }: any) => {
   return (
-    <BaseNode isGeneral>
+    <BaseNode isGeneral selected={selected}>
       <div>AutomationNode</div>
     </BaseNode>
   );
