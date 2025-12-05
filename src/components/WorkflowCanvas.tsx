@@ -5,6 +5,8 @@ import { useShallow } from "zustand/react/shallow";
 
 import "@xyflow/react/dist/style.css";
 import type { AppState } from "@/types/state";
+import { NODES } from "./nodes";
+import { DEFAULT_EDGE_STYLES } from "@/constants";
 
 const WorkflowCanvas = () => {
   const { theme } = useTheme();
@@ -17,12 +19,14 @@ const WorkflowCanvas = () => {
       <ReactFlow
         fitView
         nodes={nodes}
+        nodeTypes={NODES}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         colorMode={theme}
         className="rounded-md"
+        defaultEdgeOptions={DEFAULT_EDGE_STYLES}
       >
         <Background />
         <Controls />
