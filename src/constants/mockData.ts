@@ -10,18 +10,10 @@ export const initialNodes: Node[] = [
   },
   {
     id: "n2",
-    position: { x: 100, y: 100 },
+    position: { x: 200, y: -100 },
     data: { label: "Node 2" },
     targetPosition: Position.Left,
   },
 ];
 
-export const initialEdges: Edge[] = [
-  {
-    id: "n1-n2",
-    source: "n1",
-    target: "n2",
-    type: "smoothstep",
-    animated: true,
-  },
-];
+export const initialEdges: Edge[] = [];
