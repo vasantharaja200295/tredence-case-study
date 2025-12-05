@@ -18,7 +18,7 @@ const TaskNode = ({ data, selected }: any) => {
       <div className=" mt-1 flex flex-col gap-2">
         <p className=" font-regular">{data.title}</p>
         <div className="font-semibold text-sm">
-          Assignee
+          Assignee:
           <User image={data.assignee.image} name={data.assignee.name} />
         </div>
         <p className="font-semibold text-sm">

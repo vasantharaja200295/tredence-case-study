@@ -1,9 +1,22 @@
+import { ClipboardClock } from "lucide-react";
+import { Badge } from "../ui/badge";
 import BaseNode from "./BaseNode";
+import { Separator } from "../ui/separator";
 
 const EndNode = ({ data, selected }: any) => {
   return (
     <BaseNode isEnd selected={selected}>
-      <div>End Node</div>
+      <div className="flex items-center gap-2 pr-2 mb-2">
+        <ClipboardClock size={18} />
+        <Badge className="text-xs font-light rounded-sm bg-red-400">End</Badge>
+      </div>
+      <Separator />
+      <div className=" mt-1 flex flex-col items-center">
+        <p className=" font-regular text-sm">
+          <span className=" font-semibold">Message:</span>{" "}
+          <span className=" font-medium text-xs">{data.message}</span>
+        </p>
+      </div>
     </BaseNode>
   );
 };

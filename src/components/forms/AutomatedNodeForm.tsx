@@ -3,17 +3,26 @@ import useStore from "@/store/workflowStore";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import type { AppState } from "@/types/state";
-import type { AutomationNodeData, ActionParameter } from "@/types/nodes";
+import type { AutomationNodeData } from "@/types/nodes";
 import { useShallow } from "zustand/react/shallow";
 import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MOCK_AUTOMATION_ACTIONS } from "@/constants/mockData";
 
 const AutomatedNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
 
   const handleChange = useCallback(
-    <K extends keyof AutomationNodeData>(field: K, value: AutomationNodeData[K]) => {
+    <K extends keyof AutomationNodeData>(
+      field: K,
+      value: AutomationNodeData[K]
+    ) => {
       if (selectedNode && selectedNode.type === "automation") {
         updateNode(selectedNode.id, { [field]: value });
       }
@@ -21,58 +30,44 @@ const AutomatedNodeForm = () => {
     [selectedNode, updateNode]
   );
 
-  const handleActionNameChange = useCallback(
-    (value: string) => {
+  const handleActionSelect = useCallback(
+    (actionId: string) => {
       if (selectedNode && selectedNode.type === "automation") {
-        const currentAction = selectedNode.data.action || { name: "", params: [] };
-        updateNode(selectedNode.id, {
-          action: {
-            ...currentAction,
-            name: value,
-          },
-        });
+        const selectedAction = MOCK_AUTOMATION_ACTIONS.find(
+          (action) => action.id === actionId
+        );
+
+        if (selectedAction) {
+          // Create params array with names from the selected action and empty values
+          const params = selectedAction.params.map((param) => ({
+            name: param.name,
+            value: "",
+          }));
+
+          updateNode(selectedNode.id, {
+            action: {
+              name: selectedAction.name,
+              params: params,
+            },
+          });
+        }
       }
     },
     [selectedNode, updateNode]
   );
 
-  const handleParamChange = useCallback(
-    (index: number, field: keyof ActionParameter, value: string) => {
+  const handleParamValueChange = useCallback(
+    (index: number, value: string) => {
       if (selectedNode && selectedNode.type === "automation") {
-        const currentAction = selectedNode.data.action || { name: "", params: [] };
+        const currentAction = selectedNode.data.action || {
+          name: "",
+          params: [],
+        };
         const updatedParams = [...currentAction.params];
         updatedParams[index] = {
           ...updatedParams[index],
-          [field]: value,
+          value: value,
         };
-        updateNode(selectedNode.id, {
-          action: {
-            ...currentAction,
-            params: updatedParams,
-          },
-        });
-      }
-    },
-    [selectedNode, updateNode]
-  );
-
-  const handleAddParam = useCallback(() => {
-    if (selectedNode && selectedNode.type === "automation") {
-      const currentAction = selectedNode.data.action || { name: "", params: [] };
-      updateNode(selectedNode.id, {
-        action: {
-          ...currentAction,
-          params: [...currentAction.params, { name: "", value: "" }],
-        },
-      });
-    }
-  }, [selectedNode, updateNode]);
-
-  const handleRemoveParam = useCallback(
-    (index: number) => {
-      if (selectedNode && selectedNode.type === "automation") {
-        const currentAction = selectedNode.data.action || { name: "", params: [] };
-        const updatedParams = currentAction.params.filter((_, i) => i !== index);
         updateNode(selectedNode.id, {
           action: {
             ...currentAction,
@@ -124,98 +119,86 @@ const AutomatedNodeForm = () => {
           />
         </div>
 
-        {/* Action Name */}
+        {/* Select Action */}
         <div className="space-y-2">
-          <Label htmlFor="actionName">
-            Action Name <span className="text-red-500">*</span>
+          <Label htmlFor="actionSelect">
+            Select Action <span className="text-red-500">*</span>
           </Label>
-          <Input
-            id="actionName"
-            placeholder="e.g., sendEmail, updateDatabase, triggerWebhook"
-            value={data.action?.name || ""}
-            onChange={(e) => handleActionNameChange(e.target.value)}
-          />
+          <Select
+            value={
+              MOCK_AUTOMATION_ACTIONS.find(
+                (action) => action.name === data.action?.name
+              )?.id || ""
+            }
+            onValueChange={handleActionSelect}
+          >
+            <SelectTrigger id="actionSelect" className="h-[45px] w-full">
+              <SelectValue placeholder="Choose an automation action" />
+            </SelectTrigger>
+            <SelectContent>
+              {MOCK_AUTOMATION_ACTIONS.map((action) => (
+                <SelectItem key={action.id} value={action.id}>
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">{action.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {action.description}
+                    </span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <p className="text-xs text-muted-foreground">
-            Specify the automation action to execute
+            Select an automation action from the available options
           </p>
         </div>
 
         {/* Action Parameters */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
+        {params.length > 0 && (
+          <div className="space-y-3">
             <Label>Action Parameters</Label>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAddParam}
-              className="h-8"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Add Parameter
-            </Button>
-          </div>
-
-          {params.length === 0 ? (
-            <div className="text-sm text-muted-foreground border rounded-lg p-4 text-center">
-              No parameters configured. Click "Add Parameter" to add action
-              parameters.
-            </div>
-          ) : (
             <div className="space-y-3">
               {params.map((param, index) => (
                 <div
                   key={index}
-                  className="border rounded-lg p-3 space-y-3 bg-muted/30"
+                  className="border rounded-lg p-3 space-y-2 bg-muted/30"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">
-                      Parameter {index + 1}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveParam(index)}
-                      className="h-7 w-7 p-0 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label htmlFor={`param-name-${index}`} className="text-xs">
-                        Parameter Name
-                      </Label>
-                      <Input
-                        id={`param-name-${index}`}
-                        placeholder="e.g., recipient, subject"
-                        value={param.name}
-                        onChange={(e) =>
-                          handleParamChange(index, "name", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor={`param-value-${index}`} className="text-xs">
-                        Parameter Value
-                      </Label>
-                      <Input
-                        id={`param-value-${index}`}
-                        placeholder="e.g., user@example.com"
-                        value={param.value}
-                        onChange={(e) =>
-                          handleParamChange(index, "value", e.target.value)
-                        }
-                      />
-                    </div>
-                  </div>
+                  <Label
+                    htmlFor={`param-value-${index}`}
+                    className="text-sm font-medium"
+                  >
+                    {param.name} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id={`param-value-${index}`}
+                    placeholder={
+                      MOCK_AUTOMATION_ACTIONS.find(
+                        (action) => action.name === data.action?.name
+                      )?.params.find((p) => p.name === param.name)
+                        ?.placeholder || `Enter ${param.name}`
+                    }
+                    value={param.value}
+                    onChange={(e) =>
+                      handleParamValueChange(index, e.target.value)
+                    }
+                  />
                 </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {params.length === 0 && data.action?.name && (
+          <div className="text-sm text-muted-foreground border rounded-lg p-4 text-center">
+            No parameters required for this action.
+          </div>
+        )}
+
+        {!data.action?.name && (
+          <div className="text-sm text-muted-foreground border rounded-lg p-4 text-center">
+            Select an action to configure parameters.
+          </div>
+        )}
       </div>
     </div>
   );

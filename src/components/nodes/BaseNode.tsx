@@ -60,9 +60,6 @@ const BaseNode = ({
               id={`${nodeId}+true-output`}
               className="bg-green-500! border-green-700!"
             />
-            <span className="absolute -top-2 -left-16 text-xs font-semibold text-green-600 whitespace-nowrap">
-              Approved
-            </span>
           </div>
 
           {/* Output Handle for False */}
@@ -73,9 +70,6 @@ const BaseNode = ({
               id={`${nodeId}+false-output`}
               className="bg-red-500! border-red-700!"
             />
-            <span className="absolute -bottom-2 -left-15 text-xs font-semibold text-red-600 whitespace-nowrap">
-              Rejected
-            </span>
           </div>
         </>
       )}

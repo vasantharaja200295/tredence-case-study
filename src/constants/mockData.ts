@@ -75,12 +75,6 @@ export const initialNodes: WorkflowNode[] = [
         params: [
           { name: "to", value: "new.employee@company.com" },
           { name: "subject", value: "Welcome to the Team!" },
-          {
-            name: "body",
-            value:
-              "Dear {{employee_name}},\n\nWelcome to our company! We're excited to have you on board.\n\nBest regards,\nHR Team",
-          },
-          { name: "cc", value: "hr@company.com" },
         ],
       },
     },
@@ -92,13 +86,12 @@ export const initialNodes: WorkflowNode[] = [
     type: "automation",
     position: { x: 1200, y: 100 },
     data: {
-      title: "Update HR Database",
+      title: "Generate Onboarding Document",
       action: {
-        name: "Update Database",
+        name: "Generate Document",
         params: [
-          { name: "employeeId", value: "{{new_employee_id}}" },
-          { name: "field", value: "onboarding_status" },
-          { name: "value", value: "completed" },
+          { name: "template", value: "onboarding_checklist" },
+          { name: "recipient", value: "new.employee@company.com" },
         ],
       },
     },
@@ -188,15 +181,8 @@ export const initialEdges: Edge[] = [
     source: "4",
     target: "5",
     sourceHandle: "4+true-output", // Approved path
-    type: "smoothstep",
+    type: "approved",
     animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#22c55e", // Green
-    },
-    label: "Approved ✓",
-    labelStyle: { fill: "#22c55e", fontWeight: 600 },
-    labelBgStyle: { fill: "#1f2937", fillOpacity: 0.9 },
   },
 
   // Automated 1 to Automated 2
@@ -231,15 +217,8 @@ export const initialEdges: Edge[] = [
     source: "4",
     target: "8",
     sourceHandle: "4+false-output", // Rejected path
-    type: "smoothstep",
+    type: "rejected",
     animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#ef4444", // Red
-    },
-    label: "Rejected ✗",
-    labelStyle: { fill: "#ef4444", fontWeight: 600 },
-    labelBgStyle: { fill: "#1f2937", fillOpacity: 0.9 },
   },
 ];
 
@@ -303,7 +282,7 @@ export const MOCK_APPROVER_ROLES = [
 
 export const MOCK_AUTOMATION_ACTIONS = [
   {
-    id: "action-1",
+    id: "send_email",
     name: "Send Email",
     description: "Send automated email notification",
     params: [
@@ -319,40 +298,15 @@ export const MOCK_AUTOMATION_ACTIONS = [
         required: true,
         placeholder: "Email subject",
       },
-      {
-        name: "body",
-        type: "text",
-        required: true,
-        placeholder: "Email content",
-      },
     ],
   },
   {
-    id: "action-2",
-    name: "Generate PDF",
-    description: "Generate PDF document",
+    id: "generate_doc",
+    name: "Generate Document",
+    description: "Generate document from template",
     params: [
-      { name: "templateId", type: "string", required: true },
-      { name: "fileName", type: "string", required: true },
-    ],
-  },
-  {
-    id: "action-3",
-    name: "Update Database",
-    description: "Update employee database record",
-    params: [
-      { name: "employeeId", type: "string", required: true },
-      { name: "field", type: "string", required: true },
-      { name: "value", type: "string", required: true },
-    ],
-  },
-  {
-    id: "action-4",
-    name: "Send Slack Notification",
-    description: "Post message to Slack channel",
-    params: [
-      { name: "channel", type: "string", required: true },
-      { name: "message", type: "text", required: true },
+      { name: "template", type: "string", required: true, placeholder: "Template name" },
+      { name: "recipient", type: "string", required: true, placeholder: "recipient@company.com" },
     ],
   },
 ];

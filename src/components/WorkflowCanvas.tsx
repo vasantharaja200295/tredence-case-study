@@ -13,6 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import "@xyflow/react/dist/style.css";
 import type { AppState } from "@/types/state";
+import type { WorkflowNode } from "@/types/nodes";
 import { NODES } from "./nodes";
 import { DEFAULT_EDGE_STYLES } from "@/constants";
 import { createNode } from "@/lib/nodeUitls";
@@ -32,7 +33,7 @@ const WorkflowCanvas = () => {
 
   const onNodeClick = useCallback<NodeMouseHandler>(
     (_event, node) => {
-      setSelectedNode(node);
+      setSelectedNode(node as WorkflowNode);
     },
     [setSelectedNode]
   );
@@ -65,7 +66,6 @@ const WorkflowCanvas = () => {
     },
     [nodes, setNodes, screenToFlowPosition]
   );
-
   return (
     <div className=" h-full w-full border rounded-md">
       <ReactFlow

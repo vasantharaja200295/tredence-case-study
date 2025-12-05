@@ -6,8 +6,11 @@ import { ReactFlowProvider } from "@xyflow/react";
 import WorkflowCanvas from "./components/WorkflowCanvas";
 import ConfigPanel from "./components/ConfigPanel";
 import { Toaster } from "sonner";
+import useStore from "./store/workflowStore";
+import { useShallow } from "zustand/react/shallow";
 
 function App() {
+  const selectedNode = useStore(useShallow((state) => state.selectedNode));
   return (
     <ThemeProvider defaultTheme="dark" storageKey="theme-key">
       <SidebarProvider>
@@ -27,11 +30,13 @@ function App() {
             </div>
           </div>
         </main>
-        <aside>
-          <div className=" w-64 border-l h-full">
-            <ConfigPanel />
-          </div>
-        </aside>
+        {selectedNode && (
+          <aside>
+            <div className=" w-[400px] border-l h-full">
+              <ConfigPanel />
+            </div>
+          </aside>
+        )}
         <Toaster position={"top-center"} richColors closeButton />
       </SidebarProvider>
     </ThemeProvider>
