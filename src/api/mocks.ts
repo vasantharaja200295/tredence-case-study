@@ -20,7 +20,13 @@ export async function simulateWorkflow(workflow: {
   });
 
   const visited = new Set<string>();
-  const steps: any[] = [];
+  const steps: Array<{
+    step: number;
+    type: string;
+    status: "success";
+    details: string;
+    [key: string]: unknown;
+  }> = [];
   let stepNum = 1;
 
   function traverse(nodeId: string) {
