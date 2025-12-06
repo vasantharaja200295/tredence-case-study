@@ -24,6 +24,7 @@ const RunWorkflowModal = ({ children }: Props) => {
   const { nodes, edges } = useStore();
   const simulateMutation = useSimulateMutation();
   const [showResults, setShowResults] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleRun = () => {
     simulateMutation.mutate(
@@ -34,11 +35,19 @@ const RunWorkflowModal = ({ children }: Props) => {
     );
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      setShowResults(false);
+      simulateMutation.reset();
+    }
+  };
+
   const steps = simulateMutation.data?.steps || [];
   const summary = simulateMutation.data?.summary;
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -57,18 +66,18 @@ const RunWorkflowModal = ({ children }: Props) => {
               {steps.map((step, i) => (
                 <div
                   key={i}
-                  className="flex text-sm gap-2 m-1 font-mono items-center"
+                  className="flex text-sm gap-2 m-1 font-family-mono items-center"
                 >
                   {step.status === "success" ? (
                     <Check color="#84cc16" size={18} />
                   ) : (
                     <X color="#e11d48" size={18} />
                   )}
-                  <span>{step.details}</span>
+                  <span className="w-[80%]">{step.details}</span>
                 </div>
               ))}
               {summary && (
-                <div className="text-sm font-mono mt-2 px-2">
+                <div className="text-sm font-family-mono mt-2 px-2">
                   <p>-------------------</p>
                   <p>{summary}</p>
                 </div>

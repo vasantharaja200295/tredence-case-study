@@ -10,7 +10,9 @@ const ToolTip = ({ text, children }: Props) => {
   return (
     <Tooltip>
       <TooltipTrigger>{children}</TooltipTrigger>
-      <TooltipContent>{text}</TooltipContent>
+      <TooltipContent side="left" sideOffset={15}>
+        {text}
+      </TooltipContent>
     </Tooltip>
   );
 };

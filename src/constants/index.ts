@@ -10,8 +10,10 @@ export const HEADER_HEIGHT_OFFSET = 60;
 
 export const DEFAULT_EDGE_STYLES = {
   style: {
-    strokeWidth: 5,
+    strokeWidth: 8,
   },
+  type: "smoothstep",
+  animated: true,
 } as const;
 
 export const DEFAULT_HANDLE_STYLES = {

@@ -1,4 +1,4 @@
-import { useCallback, type DragEvent } from "react";
+import { useCallback, useRef, type DragEvent } from "react";
 import { isValidConnection } from "@/lib/graphUtils";
 import { toast } from "sonner";
 import {
@@ -9,6 +9,7 @@ import {
   useReactFlow,
   type NodeMouseHandler,
   type Connection,
+  type Edge,
 } from "@xyflow/react";
 import { useTheme } from "./theme/provider";
 import useStore from "@/store/workflowStore";
@@ -31,8 +32,11 @@ const WorkflowCanvas = () => {
     onEdgesChange,
     onConnect,
     setNodes,
+    setEdges,
     setSelectedNode,
   } = useStore(useShallow(mapStateToProps));
+
+  const edgeReconnectSuccessful = useRef(true);
 
   // Custom connect handler to validate connections
   const handleConnect = useCallback(
@@ -84,6 +88,32 @@ const WorkflowCanvas = () => {
     [nodes, setNodes, screenToFlowPosition]
   );
 
+  const onReconnectStart = useCallback(() => {
+    edgeReconnectSuccessful.current = false;
+  }, []);
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      edgeReconnectSuccessful.current = true;
+      setEdges(
+        edges.map((edge) =>
+          edge.id === oldEdge.id ? { ...oldEdge, ...newConnection } : edge
+        )
+      );
+    },
+    [edges, setEdges]
+  );
+
+  const onReconnectEnd = useCallback(
+    (_: MouseEvent | TouchEvent, edge: Edge) => {
+      if (!edgeReconnectSuccessful.current) {
+        setEdges(edges.filter((e) => e.id !== edge.id));
+      }
+      edgeReconnectSuccessful.current = true;
+    },
+    [edges, setEdges]
+  );
+
   return (
     <div className=" h-full w-full border rounded-md">
       <ReactFlow
@@ -98,6 +128,10 @@ const WorkflowCanvas = () => {
         onDragOver={onDragOver}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
+        onReconnect={onReconnect}
+        onReconnectStart={onReconnectStart}
+        onReconnectEnd={onReconnectEnd}
+        onlyRenderVisibleElements={true}
         colorMode={theme}
         className="rounded-md"
         defaultEdgeOptions={DEFAULT_EDGE_STYLES}
@@ -117,6 +151,7 @@ const mapStateToProps = (state: AppState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   setNodes: state.setNodes,
+  setEdges: state.setEdges,
   setSelectedNode: state.setSelectedNode,
 });
 

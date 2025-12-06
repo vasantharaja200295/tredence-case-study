@@ -5,7 +5,7 @@ export const initialNodes: WorkflowNode[] = [
   {
     id: "start-node",
     type: "start",
-    position: { x: 50, y: 200 },
+    position: { x: -150, y: 200 },
     data: {
       title: "Employee Onboarding Workflow",
     },
@@ -129,11 +129,6 @@ export const initialEdges: Edge[] = [
     source: "start-node",
     target: "2",
     type: "smoothstep",
-    animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#64748b",
-    },
   },
 
   // Start to Task 2
@@ -142,11 +137,6 @@ export const initialEdges: Edge[] = [
     source: "1",
     target: "3",
     type: "smoothstep",
-    animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#64748b",
-    },
   },
 
   // Task 1 to Approval
@@ -155,11 +145,6 @@ export const initialEdges: Edge[] = [
     source: "2",
     target: "4",
     type: "smoothstep",
-    animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#64748b",
-    },
   },
 
   // Task 2 to Approval
@@ -168,11 +153,6 @@ export const initialEdges: Edge[] = [
     source: "3",
     target: "4",
     type: "smoothstep",
-    animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#64748b",
-    },
   },
 
   // Approval (Approved) to Automated 1
@@ -181,7 +161,7 @@ export const initialEdges: Edge[] = [
     source: "4",
     target: "5",
     sourceHandle: "4+true-output", // Approved path
-    type: "approved",
+    type: "smoothstep",
     animated: true,
   },
 
@@ -191,11 +171,6 @@ export const initialEdges: Edge[] = [
     source: "5",
     target: "6",
     type: "smoothstep",
-    animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#64748b",
-    },
   },
 
   // Automated 2 to End (Success)
@@ -204,20 +179,14 @@ export const initialEdges: Edge[] = [
     source: "6",
     target: "7",
     type: "smoothstep",
-    animated: true,
-    style: {
-      strokeWidth: 3,
-      stroke: "#64748b",
-    },
   },
 
-  // Approval (Rejected) to End (Rejected)
   {
     id: "e4-8",
     source: "4",
     target: "8",
-    sourceHandle: "4+false-output", // Rejected path
-    type: "rejected",
+    sourceHandle: "4+false-output",
+    type: "smoothstep",
     animated: true,
   },
 ];
@@ -305,8 +274,18 @@ export const MOCK_AUTOMATION_ACTIONS = [
     name: "Generate Document",
     description: "Generate document from template",
     params: [
-      { name: "template", type: "string", required: true, placeholder: "Template name" },
-      { name: "recipient", type: "string", required: true, placeholder: "recipient@company.com" },
+      {
+        name: "template",
+        type: "string",
+        required: true,
+        placeholder: "Template name",
+      },
+      {
+        name: "recipient",
+        type: "string",
+        required: true,
+        placeholder: "recipient@company.com",
+      },
     ],
   },
 ];

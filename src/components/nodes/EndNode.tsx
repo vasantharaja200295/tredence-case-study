@@ -17,7 +17,7 @@ const EndNode = ({ data, selected }: Props) => {
         <Badge className="text-xs font-light rounded-sm bg-red-400">End</Badge>
       </div>
       <Separator />
-      <div className=" mt-1 flex flex-col items-center">
+      <div className=" mt-1 flex flex-col items-start">
         <p className=" font-regular text-sm">
           <span className=" font-semibold">Message:</span>{" "}
           <span className=" font-medium text-xs">{data.message}</span>

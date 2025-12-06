@@ -14,24 +14,28 @@ import { NODE_TYPES } from "@/constants";
 
 const SidebarItems = [
   {
+    id: 1,
     title: "Manual Task",
     description: "Manual Task node",
     icon: <UserRoundCheck size={14} />,
     type: NODE_TYPES.TASK,
   },
   {
+    id: 2,
     title: "Approval",
     description: "Manager Approval or Reject Action Node",
     icon: <GitBranch size={14} />,
     type: NODE_TYPES.APPROVAL,
   },
   {
+    id: 3,
     title: "Automated Task",
     description: "Automated Task Node",
     icon: <ClipboardClock size={14} />,
     type: NODE_TYPES.AUTOMATION,
   },
   {
+    id: 4,
     title: "End",
     description: "End node",
     icon: <CheckCheck size={14} />,
@@ -68,6 +72,7 @@ const NodesSidebar = () => {
             draggable
             onDragStart={(e) => onDragStart(e, item.type)}
             onDragEnd={onDragEnd}
+            key={item.id}
           >
             <CardContent className="px-0">
               <div className=" flex gap-3 items-center">
