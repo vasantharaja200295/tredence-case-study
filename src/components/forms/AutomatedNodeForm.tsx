@@ -15,11 +15,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MOCK_AUTOMATION_ACTIONS } from "@/constants/mockData";
-import { automationNodeSchema, type AutomationNodeFormData } from "@/lib/validations";
+import { useAutomationsQuery } from "@/api/mocks";
+import {
+  automationNodeSchema,
+  type AutomationNodeFormData,
+} from "@/lib/validations";
 
 const AutomatedNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
+
+  const { data: automationActions } = useAutomationsQuery();
 
   const {
     register,
@@ -59,7 +64,7 @@ const AutomatedNodeForm = () => {
 
   const handleActionSelect = useCallback(
     (actionId: string) => {
-      const selectedAction = MOCK_AUTOMATION_ACTIONS.find(
+      const selectedAction = automationActions?.find(
         (action) => action.id === actionId
       );
 
@@ -133,7 +138,9 @@ const AutomatedNodeForm = () => {
           {errors.title && (
             <p className="text-xs text-red-500">{errors.title.message}</p>
           )}
-          <p className="text-xs text-muted-foreground">Maximum 100 characters</p>
+          <p className="text-xs text-muted-foreground">
+            Maximum 100 characters
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -142,7 +149,7 @@ const AutomatedNodeForm = () => {
           </Label>
           <Select
             value={
-              MOCK_AUTOMATION_ACTIONS.find(
+              automationActions?.find(
                 (action) => action.name === currentAction?.name
               )?.id || ""
             }
@@ -152,7 +159,7 @@ const AutomatedNodeForm = () => {
               <SelectValue placeholder="Choose an automation action" />
             </SelectTrigger>
             <SelectContent>
-              {MOCK_AUTOMATION_ACTIONS.map((action) => (
+              {automationActions?.map((action) => (
                 <SelectItem key={action.id} value={action.id}>
                   <div className="flex flex-col items-start">
                     <span className="font-medium">{action.name}</span>
@@ -190,9 +197,9 @@ const AutomatedNodeForm = () => {
                   <Input
                     id={`param-value-${index}`}
                     placeholder={
-                      MOCK_AUTOMATION_ACTIONS.find(
-                        (action) => action.name === data.action?.name
-                      )?.params.find((p) => p.name === param.name)
+                      automationActions
+                        ?.find((action) => action.name === data.action?.name)
+                        ?.params.find((p) => p.name === param.name)
                         ?.placeholder || `Enter ${param.name}`
                     }
                     value={param.value}

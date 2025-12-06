@@ -6,7 +6,7 @@ import type { WorkflowNode } from "@/types/nodes";
  * Used for cycle detection in workflow graphs
  */
 export const hasPath = (
-  nodes: WorkflowNode[],
+  _nodes: WorkflowNode[],
   edges: Edge[],
   startId: string,
   targetId: string

@@ -33,6 +33,7 @@ const WorkflowCanvas = () => {
     setNodes,
     setSelectedNode,
   } = useStore(useShallow(mapStateToProps));
+
   // Custom connect handler to validate connections
   const handleConnect = useCallback(
     (connection: Connection) => {
