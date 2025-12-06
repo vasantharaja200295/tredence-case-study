@@ -2,8 +2,14 @@ import { ClipboardClock } from "lucide-react";
 import { Badge } from "../ui/badge";
 import BaseNode from "./BaseNode";
 import { Separator } from "../ui/separator";
+import type { EndNodeData } from "@/types/nodes";
 
-const EndNode = ({ data, selected }: any) => {
+type Props = {
+  data: EndNodeData;
+  selected: boolean;
+};
+
+const EndNode = ({ data, selected }: Props) => {
   return (
     <BaseNode isEnd selected={selected}>
       <div className="flex items-center gap-2 pr-2 mb-2">

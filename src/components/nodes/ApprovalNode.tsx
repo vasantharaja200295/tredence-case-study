@@ -3,8 +3,14 @@ import { Badge } from "../ui/badge";
 import BaseNode from "./BaseNode";
 import { Separator } from "../ui/separator";
 import User from "@/components/User";
+import type { ApprovalNodeData } from "@/types/nodes";
 
-const ApprovalNode = ({ data, selected }: any) => {
+type Props = {
+  data: ApprovalNodeData;
+  selected: boolean;
+};
+
+const ApprovalNode = ({ data, selected }: Props) => {
   return (
     <BaseNode isConditional selected={selected}>
       <div className="flex items-center gap-2 pr-2 mb-2">

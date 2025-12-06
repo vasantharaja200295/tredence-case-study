@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAutomationsQuery } from "@/api/mocks";
+import { useAutomationsQuery } from "@/api";
 import {
   automationNodeSchema,
   type AutomationNodeFormData,

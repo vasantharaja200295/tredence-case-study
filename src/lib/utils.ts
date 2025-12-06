@@ -15,3 +15,6 @@ export function formatDate(date: Date | number | string) {
 
   return formatedDate.toLocaleString("EN-IN", DATE_OPTIONS);
 }
+
+
+export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));

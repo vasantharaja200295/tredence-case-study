@@ -19,31 +19,31 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <ThemeProvider defaultTheme="dark" storageKey="theme-key">
-          <SidebarProvider>
-            <main className="h-screen w-screen flex">
-              <NodesSidebar />
+        <ReactFlowProvider>
+          <ThemeProvider defaultTheme="dark" storageKey="theme-key">
+            <SidebarProvider>
+              <main className="h-screen w-screen flex">
+                <NodesSidebar />
 
-              <div className="h-[92.5vh] w-full flex-col">
-                <Header />
-                <Separator />
-                <div className="h-full w-full p-2">
-                  <ReactFlowProvider>
+                <div className="h-[92.5vh] w-full flex-col">
+                  <Header />
+                  <Separator />
+                  <div className="h-full w-full p-2">
                     <WorkflowCanvas />
-                  </ReactFlowProvider>
+                  </div>
                 </div>
-              </div>
-            </main>
-            {selectedNode && (
-              <aside>
-                <div className="w-[400px] border-l h-full">
-                  <ConfigPanel />
-                </div>
-              </aside>
-            )}
-            <Toaster position={"top-center"} richColors closeButton />
-          </SidebarProvider>
-        </ThemeProvider>
+              </main>
+              {selectedNode && (
+                <aside>
+                  <div className="w-[400px] border-l h-full">
+                    <ConfigPanel />
+                  </div>
+                </aside>
+              )}
+              <Toaster position={"top-center"} richColors closeButton />
+            </SidebarProvider>
+          </ThemeProvider>
+        </ReactFlowProvider>
       </ErrorBoundary>
     </QueryClientProvider>
   );

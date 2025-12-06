@@ -2,8 +2,14 @@ import { Play } from "lucide-react";
 import BaseNode from "./BaseNode";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
+import type { StartNodeData } from "@/types/nodes";
 
-const StartNode = ({ data, selected }: any) => {
+type Props = {
+  data: StartNodeData;
+  selected: boolean;
+};
+
+const StartNode = ({ data, selected }: Props) => {
   return (
     <BaseNode isStart selected={selected}>
       <div className="flex items-center gap-2 pr-2 mb-2">

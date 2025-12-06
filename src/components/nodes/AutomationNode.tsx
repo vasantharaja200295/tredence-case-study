@@ -2,8 +2,14 @@ import { ClipboardClock } from "lucide-react";
 import { Badge } from "../ui/badge";
 import BaseNode from "./BaseNode";
 import { Separator } from "../ui/separator";
+import type { AutomationNodeData } from "@/types/nodes";
 
-const AutomationNode = ({ data, selected }: any) => {
+type Props = {
+  data: AutomationNodeData;
+  selected: boolean;
+};
+
+const AutomationNode = ({ data, selected }: Props) => {
   return (
     <BaseNode isGeneral selected={selected}>
       <div className="flex items-center gap-2 pr-2 mb-2">
