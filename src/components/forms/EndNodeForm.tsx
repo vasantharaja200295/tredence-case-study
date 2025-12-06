@@ -1,6 +1,4 @@
-import { useCallback, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
 import useStore from "@/store/workflowStore";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
@@ -9,32 +7,9 @@ import type { EndNodeData } from "@/types/nodes";
 import { useShallow } from "zustand/react/shallow";
 import { Card, CardContent } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import { endNodeSchema, type EndNodeFormData } from "@/lib/validations";
 
 const EndNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
-
-  const {
-    register,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm<EndNodeFormData>({
-    resolver: zodResolver(endNodeSchema),
-    defaultValues: {
-      message: "",
-      summary: false,
-    },
-  });
-
-  useEffect(() => {
-    if (selectedNode && selectedNode.type === "end") {
-      reset({
-        message: selectedNode.data.message || "",
-        summary: selectedNode.data.summary || false,
-      });
-    }
-  }, [selectedNode, reset]);
 
   const handleChange = useCallback(
     <K extends keyof EndNodeData>(field: K, value: EndNodeData[K]) => {
@@ -74,14 +49,9 @@ const EndNodeForm = () => {
             id="message"
             placeholder="e.g., Workflow completed successfully! All tasks have been executed."
             rows={4}
-            {...register("message", {
-              onChange: (e) => handleChange("message", e.target.value),
-            })}
-            className={errors.message ? "border-red-500" : ""}
+            value={selectedNode.data.message || ""}
+            onChange={(e) => handleChange("message", e.target.value)}
           />
-          {errors.message && (
-            <p className="text-xs text-red-500">{errors.message.message}</p>
-          )}
           <p className="text-xs text-muted-foreground">
             Message displayed when the workflow reaches completion (max 200
             characters)
@@ -90,19 +60,10 @@ const EndNodeForm = () => {
 
         <div className="space-y-3 border rounded-lg p-4">
           <div className="flex items-center space-x-2">
-            <Controller
-              name="summary"
-              control={control}
-              render={({ field }) => (
-                <Checkbox
-                  id="summary"
-                  checked={field.value}
-                  onCheckedChange={(checked) => {
-                    field.onChange(checked);
-                    handleChange("summary", checked as boolean);
-                  }}
-                />
-              )}
+            <Checkbox
+              id="summary"
+              checked={selectedNode.data.summary || false}
+              onCheckedChange={(checked) => handleChange("summary", checked as boolean)}
             />
             <div className="flex-1">
               <Label htmlFor="summary" className="cursor-pointer">

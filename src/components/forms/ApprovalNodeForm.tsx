@@ -1,6 +1,4 @@
-import { useCallback, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
 import useStore from "@/store/workflowStore";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -11,42 +9,9 @@ import { useShallow } from "zustand/react/shallow";
 import { Card, CardContent } from "../ui/card";
 import AssigneeSelect from "@/components/AssigneeSelect";
 import { Checkbox } from "../ui/checkbox";
-import { approvalNodeSchema, type ApprovalNodeFormData } from "@/lib/validations";
 
 const ApprovalNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
-
-  const {
-    register,
-    control,
-    formState: { errors },
-    reset,
-    watch,
-  } = useForm<ApprovalNodeFormData>({
-    resolver: zodResolver(approvalNodeSchema),
-    defaultValues: {
-      title: "",
-      approver: { name: "", image: "" },
-      approverRole: "",
-      autoApprove: { isActive: false, threshold: 0 },
-    },
-  });
-
-  const autoApproveActive = watch("autoApprove.isActive");
-
-  useEffect(() => {
-    if (selectedNode && selectedNode.type === "approval") {
-      reset({
-        title: selectedNode.data.title || "",
-        approver: selectedNode.data.approver || { name: "", image: "" },
-        approverRole: selectedNode.data.approverRole || "",
-        autoApprove: selectedNode.data.autoApprove || {
-          isActive: false,
-          threshold: 0,
-        },
-      });
-    }
-  }, [selectedNode, reset]);
 
   const handleChange = useCallback(
     <K extends keyof ApprovalNodeData>(field: K, value: ApprovalNodeData[K]) => {
@@ -68,6 +33,8 @@ const ApprovalNodeForm = () => {
   );
 
   if (!selectedNode || selectedNode.type !== "approval") return null;
+
+  const autoApproveActive = selectedNode.data.autoApprove?.isActive || false;
 
   return (
     <div className="space-y-6">
@@ -95,14 +62,9 @@ const ApprovalNodeForm = () => {
           <Input
             id="title"
             placeholder="e.g., Manager approval required"
-            {...register("title", {
-              onChange: (e) => handleChange("title", e.target.value),
-            })}
-            className={errors.title ? "border-red-500" : ""}
+            value={selectedNode.data.title || ""}
+            onChange={(e) => handleChange("title", e.target.value)}
           />
-          {errors.title && (
-            <p className="text-xs text-red-500">{errors.title.message}</p>
-          )}
           <p className="text-xs text-muted-foreground">Maximum 100 characters</p>
         </div>
 
@@ -110,20 +72,11 @@ const ApprovalNodeForm = () => {
           <Label htmlFor="approver">
             Approver <span className="text-red-500">*</span>
           </Label>
-          <Controller
-            name="approver"
-            control={control}
-            render={({ field }) => (
-              <AssigneeSelect
-                value={field.value}
-                onValueChange={handleApproverChange}
-                placeholder="Select an approver"
-              />
-            )}
+          <AssigneeSelect
+            value={selectedNode.data.approver}
+            onValueChange={handleApproverChange}
+            placeholder="Select an approver"
           />
-          {errors.approver && (
-            <p className="text-xs text-red-500">{errors.approver.message}</p>
-          )}
         </div>
 
         <div className="space-y-2">
@@ -133,14 +86,9 @@ const ApprovalNodeForm = () => {
           <Input
             id="approverRole"
             placeholder="e.g., Manager, HR Lead, Department Head"
-            {...register("approverRole", {
-              onChange: (e) => handleChange("approverRole", e.target.value),
-            })}
-            className={errors.approverRole ? "border-red-500" : ""}
+            value={selectedNode.data.approverRole || ""}
+            onChange={(e) => handleChange("approverRole", e.target.value)}
           />
-          {errors.approverRole && (
-            <p className="text-xs text-red-500">{errors.approverRole.message}</p>
-          )}
           <p className="text-xs text-muted-foreground">
             Specify the role or position of the approver
           </p>
@@ -148,22 +96,15 @@ const ApprovalNodeForm = () => {
 
         <div className="space-y-3 border rounded-lg p-4">
           <div className="flex items-center space-x-2">
-            <Controller
-              name="autoApprove.isActive"
-              control={control}
-              render={({ field }) => (
-                <Checkbox
-                  id="autoApprove"
-                  checked={field.value}
-                  onCheckedChange={(checked) => {
-                    field.onChange(checked);
-                    handleChange("autoApprove", {
-                      isActive: checked as boolean,
-                      threshold: selectedNode.data.autoApprove?.threshold || 0,
-                    });
-                  }}
-                />
-              )}
+            <Checkbox
+              id="autoApprove"
+              checked={autoApproveActive}
+              onCheckedChange={(checked) => {
+                handleChange("autoApprove", {
+                  isActive: checked as boolean,
+                  threshold: selectedNode.data.autoApprove?.threshold || 0,
+                });
+              }}
             />
             <Label htmlFor="autoApprove" className="cursor-pointer">
               Enable Auto-Approval
@@ -179,23 +120,16 @@ const ApprovalNodeForm = () => {
                 id="threshold"
                 type="number"
                 placeholder="e.g., 5000"
-                {...register("autoApprove.threshold", {
-                  valueAsNumber: true,
-                  onChange: (e) =>
-                    handleChange("autoApprove", {
-                      isActive: true,
-                      threshold: parseFloat(e.target.value) || 0,
-                    }),
-                })}
+                value={selectedNode.data.autoApprove?.threshold || 0}
+                onChange={(e) =>
+                  handleChange("autoApprove", {
+                    isActive: true,
+                    threshold: parseFloat(e.target.value) || 0,
+                  })
+                }
                 min="0"
                 step="0.01"
-                className={errors.autoApprove?.threshold ? "border-red-500" : ""}
               />
-              {errors.autoApprove?.threshold && (
-                <p className="text-xs text-red-500">
-                  {errors.autoApprove.threshold.message}
-                </p>
-              )}
               <p className="text-xs text-muted-foreground">
                 Automatically approve if value is below this threshold
               </p>

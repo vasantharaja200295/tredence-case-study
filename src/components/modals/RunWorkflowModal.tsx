@@ -38,9 +38,9 @@ const RunWorkflowModal = ({ children }: Props) => {
   const summary = simulateMutation.data?.summary;
 
   return (
-    <Dialog >
-      <DialogTrigger asChild >{children}</DialogTrigger>
-      <DialogContent >
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Run Workflow</DialogTitle>
           <DialogDescription>Execute, Test, Debug workflows</DialogDescription>
@@ -68,7 +68,7 @@ const RunWorkflowModal = ({ children }: Props) => {
                 </div>
               ))}
               {summary && (
-                <div className="text-sm font-mono mt-2">
+                <div className="text-sm font-mono mt-2 px-2">
                   <p>-------------------</p>
                   <p>{summary}</p>
                 </div>

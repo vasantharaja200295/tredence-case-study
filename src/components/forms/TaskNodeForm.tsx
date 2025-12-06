@@ -1,6 +1,4 @@
-import { useCallback, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
 import useStore from "@/store/workflowStore";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -12,36 +10,9 @@ import { useShallow } from "zustand/react/shallow";
 import { Card, CardContent } from "../ui/card";
 import AssigneeSelect from "@/components/AssigneeSelect";
 import DatePicker from "../DatePicker";
-import { taskNodeSchema, type TaskNodeFormData } from "@/lib/validations";
 
 const TaskNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
-
-  const {
-    register,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm<TaskNodeFormData>({
-    resolver: zodResolver(taskNodeSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      assignee: { name: "", image: "" },
-      dueDate: Date.now(),
-    },
-  });
-
-  useEffect(() => {
-    if (selectedNode && selectedNode.type === "task") {
-      reset({
-        title: selectedNode.data.title || "",
-        description: selectedNode.data.description || "",
-        assignee: selectedNode.data.assignee || { name: "", image: "" },
-        dueDate: selectedNode.data.dueDate || Date.now(),
-      });
-    }
-  }, [selectedNode, reset]);
 
   const handleChange = useCallback(
     <K extends keyof TaskNodeData>(field: K, value: TaskNodeData[K]) => {
@@ -91,14 +62,9 @@ const TaskNodeForm = () => {
           <Input
             id="title"
             placeholder="e.g., Collect employee documents"
-            {...register("title", {
-              onChange: (e) => handleChange("title", e.target.value),
-            })}
-            className={errors.title ? "border-red-500" : ""}
+            value={selectedNode.data.title || ""}
+            onChange={(e) => handleChange("title", e.target.value)}
           />
-          {errors.title && (
-            <p className="text-xs text-red-500">{errors.title.message}</p>
-          )}
           <p className="text-xs text-muted-foreground">
             Maximum 100 characters
           </p>
@@ -110,14 +76,9 @@ const TaskNodeForm = () => {
             id="description"
             placeholder="Describe the task in detail..."
             rows={4}
-            {...register("description", {
-              onChange: (e) => handleChange("description", e.target.value),
-            })}
-            className={errors.description ? "border-red-500" : ""}
+            value={selectedNode.data.description || ""}
+            onChange={(e) => handleChange("description", e.target.value)}
           />
-          {errors.description && (
-            <p className="text-xs text-red-500">{errors.description.message}</p>
-          )}
           <p className="text-xs text-muted-foreground">
             Maximum 500 characters. Provide clear instructions for the assignee
           </p>
@@ -127,43 +88,25 @@ const TaskNodeForm = () => {
           <Label htmlFor="assignee">
             Assignee <span className="text-red-500">*</span>
           </Label>
-          <Controller
-            name="assignee"
-            control={control}
-            render={({ field }) => (
-              <AssigneeSelect
-                value={field.value}
-                onValueChange={handleAssigneeChange}
-                placeholder="Select a team member"
-              />
-            )}
+          <AssigneeSelect
+            value={selectedNode.data.assignee}
+            onValueChange={handleAssigneeChange}
+            placeholder="Select a team member"
           />
-          {errors.assignee && (
-            <p className="text-xs text-red-500">{errors.assignee.message}</p>
-          )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="dueDate">
             Due Date <span className="text-red-500">*</span>
           </Label>
-          <Controller
-            name="dueDate"
-            control={control}
-            render={({ field }) => (
-              <DatePicker
-                value={field.value}
-                onChange={(timestamp) =>
-                  handleChange("dueDate", timestamp || Date.now())
-                }
-                placeholder="Select due date"
-                minDate={new Date()}
-              />
-            )}
+          <DatePicker
+            value={selectedNode.data.dueDate}
+            onChange={(timestamp) =>
+              handleChange("dueDate", timestamp || Date.now())
+            }
+            placeholder="Select due date"
+            minDate={new Date()}
           />
-          {errors.dueDate && (
-            <p className="text-xs text-red-500">{errors.dueDate.message}</p>
-          )}
           <p className="text-xs text-muted-foreground">
             Due date must be in the future
           </p>
