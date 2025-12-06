@@ -1,4 +1,6 @@
 import { useCallback, type DragEvent } from "react";
+import { isValidConnection } from "@/lib/graphUtils";
+import { toast } from "sonner";
 import {
   ReactFlow,
   Background,
@@ -6,6 +8,7 @@ import {
   MiniMap,
   useReactFlow,
   type NodeMouseHandler,
+  type Connection,
 } from "@xyflow/react";
 import { useTheme } from "./theme/provider";
 import useStore from "@/store/workflowStore";
@@ -30,6 +33,21 @@ const WorkflowCanvas = () => {
     setNodes,
     setSelectedNode,
   } = useStore(useShallow(mapStateToProps));
+  // Custom connect handler to validate connections
+  const handleConnect = useCallback(
+    (connection: Connection) => {
+      if (
+        !isValidConnection(nodes, edges, connection.source, connection.target)
+      ) {
+        toast.error(
+          "Invalid connection: self-loops and cycles are not allowed."
+        );
+        return;
+      }
+      onConnect(connection);
+    },
+    [nodes, edges, onConnect]
+  );
 
   const onNodeClick = useCallback<NodeMouseHandler>(
     (_event, node) => {
@@ -74,7 +92,7 @@ const WorkflowCanvas = () => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
+        onConnect={handleConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onNodeClick={onNodeClick}
