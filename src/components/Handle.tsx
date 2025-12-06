@@ -1,7 +1,7 @@
 import { DEFAULT_HANDLE_STYLES } from "@/constants";
-import { Handle } from "@xyflow/react";
+import { Handle, type HandleProps } from "@xyflow/react";
 
-const CustomHandle = (props: any) => {
+const CustomHandle = (props: HandleProps) => {
   return <Handle {...props} style={DEFAULT_HANDLE_STYLES} />;
 };
 

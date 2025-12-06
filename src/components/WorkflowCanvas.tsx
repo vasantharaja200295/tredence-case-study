@@ -15,8 +15,8 @@ import "@xyflow/react/dist/style.css";
 import type { AppState } from "@/types/state";
 import type { WorkflowNode } from "@/types/nodes";
 import { NODES } from "./nodes";
-import { DEFAULT_EDGE_STYLES } from "@/constants";
-import { createNode } from "@/lib/nodeUitls";
+import { DEFAULT_EDGE_STYLES, HEADER_HEIGHT_OFFSET } from "@/constants";
+import { createNode } from "@/lib/nodeUtils";
 
 const WorkflowCanvas = () => {
   const { theme } = useTheme();
@@ -51,14 +51,12 @@ const WorkflowCanvas = () => {
     (event: DragEvent) => {
       event.preventDefault();
       const type = event.dataTransfer.getData("application/reactflow");
-      if (!type || typeof type === undefined) {
+      if (!type || typeof type === "undefined") {
         return;
       }
       const position = screenToFlowPosition({
-        // the value 60 is for compensating the header height above the canvas pane
-        // without this error correction the nodes wont be droped at the the current position of the mouse
-        x: event.clientX - 60,
-        y: event.clientY - 60,
+        x: event.clientX - HEADER_HEIGHT_OFFSET,
+        y: event.clientY - HEADER_HEIGHT_OFFSET,
       });
 
       const newNode = createNode(position, type);
@@ -66,6 +64,7 @@ const WorkflowCanvas = () => {
     },
     [nodes, setNodes, screenToFlowPosition]
   );
+
   return (
     <div className=" h-full w-full border rounded-md">
       <ReactFlow

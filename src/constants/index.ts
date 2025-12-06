@@ -6,6 +6,8 @@ import type {
   EndNodeData,
 } from "@/types/nodes";
 
+export const HEADER_HEIGHT_OFFSET = 60;
+
 export const DEFAULT_EDGE_STYLES = {
   style: {
     strokeWidth: 5,

@@ -1,4 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import useStore from "@/store/workflowStore";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -10,9 +12,36 @@ import { useShallow } from "zustand/react/shallow";
 import { Card, CardContent } from "../ui/card";
 import AssigneeSelect from "@/components/AssigneeSelect";
 import DatePicker from "../DatePicker";
+import { taskNodeSchema, type TaskNodeFormData } from "@/lib/validations";
 
 const TaskNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
+
+  const {
+    register,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm<TaskNodeFormData>({
+    resolver: zodResolver(taskNodeSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      assignee: { name: "", image: "" },
+      dueDate: Date.now(),
+    },
+  });
+
+  useEffect(() => {
+    if (selectedNode && selectedNode.type === "task") {
+      reset({
+        title: selectedNode.data.title || "",
+        description: selectedNode.data.description || "",
+        assignee: selectedNode.data.assignee || { name: "", image: "" },
+        dueDate: selectedNode.data.dueDate || Date.now(),
+      });
+    }
+  }, [selectedNode, reset]);
 
   const handleChange = useCallback(
     <K extends keyof TaskNodeData>(field: K, value: TaskNodeData[K]) => {
@@ -25,24 +54,15 @@ const TaskNodeForm = () => {
 
   const handleAssigneeChange = useCallback(
     (userId: string) => {
-      if (selectedNode && selectedNode.type === "task") {
-        const user = MOCK_USERS.find((u) => u.id === userId);
-        if (user) {
-          updateNode(selectedNode.id, {
-            assignee: {
-              image: user.image,
-              name: user.name,
-            },
-          });
-        }
+      const user = MOCK_USERS.find((u) => u.id === userId);
+      if (user) {
+        handleChange("assignee", { image: user.image, name: user.name });
       }
     },
-    [selectedNode, updateNode]
+    [handleChange]
   );
 
   if (!selectedNode || selectedNode.type !== "task") return null;
-
-  const data = selectedNode.data;
 
   return (
     <div className="space-y-6">
@@ -63,9 +83,7 @@ const TaskNodeForm = () => {
         </CardContent>
       </Card>
 
-      {/* Form Fields */}
       <div className="space-y-4">
-        {/* Title */}
         <div className="space-y-2">
           <Label htmlFor="title">
             Task Title <span className="text-red-500">*</span>
@@ -73,49 +91,82 @@ const TaskNodeForm = () => {
           <Input
             id="title"
             placeholder="e.g., Collect employee documents"
-            value={data.title || ""}
-            onChange={(e) => handleChange("title", e.target.value)}
+            {...register("title", {
+              onChange: (e) => handleChange("title", e.target.value),
+            })}
+            className={errors.title ? "border-red-500" : ""}
           />
+          {errors.title && (
+            <p className="text-xs text-red-500">{errors.title.message}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Maximum 100 characters
+          </p>
         </div>
 
-        {/* Description */}
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
           <Textarea
             id="description"
             placeholder="Describe the task in detail..."
             rows={4}
-            value={data.description || ""}
-            onChange={(e) => handleChange("description", e.target.value)}
+            {...register("description", {
+              onChange: (e) => handleChange("description", e.target.value),
+            })}
+            className={errors.description ? "border-red-500" : ""}
           />
+          {errors.description && (
+            <p className="text-xs text-red-500">{errors.description.message}</p>
+          )}
           <p className="text-xs text-muted-foreground">
-            Provide clear instructions for the assignee
+            Maximum 500 characters. Provide clear instructions for the assignee
           </p>
         </div>
 
-        {/* Assignee */}
         <div className="space-y-2">
           <Label htmlFor="assignee">
             Assignee <span className="text-red-500">*</span>
           </Label>
-          <AssigneeSelect
-            value={data.assignee}
-            onValueChange={handleAssigneeChange}
-            placeholder="Select a team member"
+          <Controller
+            name="assignee"
+            control={control}
+            render={({ field }) => (
+              <AssigneeSelect
+                value={field.value}
+                onValueChange={handleAssigneeChange}
+                placeholder="Select a team member"
+              />
+            )}
           />
+          {errors.assignee && (
+            <p className="text-xs text-red-500">{errors.assignee.message}</p>
+          )}
         </div>
 
-        {/* Due Date */}
         <div className="space-y-2">
-          <Label htmlFor="dueDate">Due Date</Label>
-          <DatePicker
-            value={data.dueDate}
-            onChange={(timeStamp) =>
-              handleChange("dueDate", timeStamp || Date.now())
-            }
-            placeholder="Select due date"
-            minDate={new Date()}
+          <Label htmlFor="dueDate">
+            Due Date <span className="text-red-500">*</span>
+          </Label>
+          <Controller
+            name="dueDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                value={field.value}
+                onChange={(timestamp) =>
+                  handleChange("dueDate", timestamp || Date.now())
+                }
+                placeholder="Select due date"
+                minDate={new Date()}
+              />
+            )}
           />
+          {errors.dueDate && (
+            <p className="text-xs text-red-500">{errors.dueDate.message}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Due date must be in the future
+          </p>
         </div>
       </div>
     </div>

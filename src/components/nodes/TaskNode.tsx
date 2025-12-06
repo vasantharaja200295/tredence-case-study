@@ -4,8 +4,14 @@ import BaseNode from "./BaseNode";
 import { Separator } from "../ui/separator";
 import User from "@/components/User";
 import { formatDate } from "@/lib/utils";
+import type { TaskNodeData } from "@/types/nodes";
 
-const TaskNode = ({ data, selected }: any) => {
+type Props = {
+  data: TaskNodeData;
+  selected: boolean;
+};
+
+const TaskNode = ({ data, selected }: Props) => {
   return (
     <BaseNode isGeneral selected={selected}>
       <div className="flex items-center gap-2 pr-2 mb-2">

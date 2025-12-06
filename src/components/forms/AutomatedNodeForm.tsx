@@ -1,4 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import useStore from "@/store/workflowStore";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -14,9 +16,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MOCK_AUTOMATION_ACTIONS } from "@/constants/mockData";
+import { automationNodeSchema, type AutomationNodeFormData } from "@/lib/validations";
 
 const AutomatedNodeForm = () => {
   const { updateNode, selectedNode } = useStore(useShallow(mapStateToProps));
+
+  const {
+    register,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm<AutomationNodeFormData>({
+    resolver: zodResolver(automationNodeSchema),
+    defaultValues: {
+      title: "",
+      action: { name: "", params: [] },
+    },
+  });
+
+  const currentAction = watch("action");
+
+  useEffect(() => {
+    if (selectedNode && selectedNode.type === "automation") {
+      reset({
+        title: selectedNode.data.title || "",
+        action: selectedNode.data.action || { name: "", params: [] },
+      });
+    }
+  }, [selectedNode, reset]);
 
   const handleChange = useCallback(
     <K extends keyof AutomationNodeData>(
@@ -32,61 +59,47 @@ const AutomatedNodeForm = () => {
 
   const handleActionSelect = useCallback(
     (actionId: string) => {
-      if (selectedNode && selectedNode.type === "automation") {
-        const selectedAction = MOCK_AUTOMATION_ACTIONS.find(
-          (action) => action.id === actionId
-        );
+      const selectedAction = MOCK_AUTOMATION_ACTIONS.find(
+        (action) => action.id === actionId
+      );
 
-        if (selectedAction) {
-          // Create params array with names from the selected action and empty values
-          const params = selectedAction.params.map((param) => ({
-            name: param.name,
-            value: "",
-          }));
+      if (selectedAction) {
+        const params = selectedAction.params.map((param) => ({
+          name: param.name,
+          value: "",
+        }));
 
-          updateNode(selectedNode.id, {
-            action: {
-              name: selectedAction.name,
-              params: params,
-            },
-          });
-        }
+        handleChange("action", {
+          name: selectedAction.name,
+          params: params,
+        });
       }
     },
-    [selectedNode, updateNode]
+    [handleChange]
   );
 
   const handleParamValueChange = useCallback(
     (index: number, value: string) => {
-      if (selectedNode && selectedNode.type === "automation") {
-        const currentAction = selectedNode.data.action || {
-          name: "",
-          params: [],
-        };
-        const updatedParams = [...currentAction.params];
-        updatedParams[index] = {
-          ...updatedParams[index],
-          value: value,
-        };
-        updateNode(selectedNode.id, {
-          action: {
-            ...currentAction,
-            params: updatedParams,
-          },
-        });
-      }
+      const updatedParams = [...currentAction.params];
+      updatedParams[index] = {
+        ...updatedParams[index],
+        value: value,
+      };
+      handleChange("action", {
+        ...currentAction,
+        params: updatedParams,
+      });
     },
-    [selectedNode, updateNode]
+    [currentAction, handleChange]
   );
 
   if (!selectedNode || selectedNode.type !== "automation") return null;
 
   const data = selectedNode.data;
-  const params = data.action?.params || [];
+  const params = currentAction?.params || [];
 
   return (
     <div className="space-y-6">
-      {/* Description Card */}
       <Card className="bg-green-50 py-3 dark:bg-green-950/20 border-green-200 dark:border-green-800">
         <CardContent className="px-3">
           <div className="flex items-start gap-3">
@@ -104,9 +117,7 @@ const AutomatedNodeForm = () => {
         </CardContent>
       </Card>
 
-      {/* Form Fields */}
       <div className="space-y-4">
-        {/* Title */}
         <div className="space-y-2">
           <Label htmlFor="title">
             Automation Title <span className="text-red-500">*</span>
@@ -114,12 +125,17 @@ const AutomatedNodeForm = () => {
           <Input
             id="title"
             placeholder="e.g., Send welcome email"
-            value={data.title || ""}
-            onChange={(e) => handleChange("title", e.target.value)}
+            {...register("title", {
+              onChange: (e) => handleChange("title", e.target.value),
+            })}
+            className={errors.title ? "border-red-500" : ""}
           />
+          {errors.title && (
+            <p className="text-xs text-red-500">{errors.title.message}</p>
+          )}
+          <p className="text-xs text-muted-foreground">Maximum 100 characters</p>
         </div>
 
-        {/* Select Action */}
         <div className="space-y-2">
           <Label htmlFor="actionSelect">
             Select Action <span className="text-red-500">*</span>
@@ -127,7 +143,7 @@ const AutomatedNodeForm = () => {
           <Select
             value={
               MOCK_AUTOMATION_ACTIONS.find(
-                (action) => action.name === data.action?.name
+                (action) => action.name === currentAction?.name
               )?.id || ""
             }
             onValueChange={handleActionSelect}
@@ -148,12 +164,14 @@ const AutomatedNodeForm = () => {
               ))}
             </SelectContent>
           </Select>
+          {errors.action && (
+            <p className="text-xs text-red-500">{errors.action.message}</p>
+          )}
           <p className="text-xs text-muted-foreground">
             Select an automation action from the available options
           </p>
         </div>
 
-        {/* Action Parameters */}
         {params.length > 0 && (
           <div className="space-y-3">
             <Label>Action Parameters</Label>
@@ -188,13 +206,13 @@ const AutomatedNodeForm = () => {
           </div>
         )}
 
-        {params.length === 0 && data.action?.name && (
+        {params.length === 0 && currentAction?.name && (
           <div className="text-sm text-muted-foreground border rounded-lg p-4 text-center">
             No parameters required for this action.
           </div>
         )}
 
-        {!data.action?.name && (
+        {!currentAction?.name && (
           <div className="text-sm text-muted-foreground border rounded-lg p-4 text-center">
             Select an action to configure parameters.
           </div>
