@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "../ui/card";
 import { useNodeId, Position } from "@xyflow/react";
 import Handle from "@/components/Handle";
+import ToolTip from "../ToolTip";
 
 type NodeProps = {
   children: React.ReactNode;
@@ -54,22 +55,26 @@ const BaseNode = ({
 
           {/* Output Handle for True */}
           <div className="absolute right-0 top-[30%] translate-x-1/2 -translate-y-1/2">
-            <Handle
-              type="source"
-              position={Position.Right}
-              id={`${nodeId}+true-output`}
-              className="bg-green-500! border-green-700!"
-            />
+            <ToolTip text="On approve">
+              <Handle
+                type="source"
+                position={Position.Right}
+                id={`${nodeId}+true-output`}
+                className="bg-green-500! border-green-700!"
+              />
+            </ToolTip>
           </div>
 
           {/* Output Handle for False */}
           <div className="absolute right-0 top-[70%] translate-x-1/2 -translate-y-1/2">
-            <Handle
-              type="source"
-              position={Position.Right}
-              id={`${nodeId}+false-output`}
-              className="bg-red-500! border-red-700!"
-            />
+            <ToolTip text="On Reject">
+              <Handle
+                type="source"
+                position={Position.Right}
+                id={`${nodeId}+false-output`}
+                className="bg-red-500! border-red-700!"
+              />
+            </ToolTip>
           </div>
         </>
       )}
