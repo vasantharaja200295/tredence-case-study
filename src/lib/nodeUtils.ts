@@ -24,7 +24,7 @@ export function createNode(position: XYPosition, type: string): WorkflowNode {
       case NODE_TYPES.END:
         return END_NODE_FIELDS;
       default:
-        return START_NODE_FIELDS; // Fallback to start node
+        return START_NODE_FIELDS; 
     }
   };
 
